@@ -455,6 +455,58 @@ export function documentResultFraudAnalysis(result: DocumentResult): FraudAnalys
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// AMLMatch
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** A single AML screening match entry. */
+export interface AMLMatch {
+  entityId: string;
+  name: string;
+  score: number;
+  datasets: string[];
+  topics: string[];
+}
+
+export function amlMatchFromJson(json: Record<string, any>): AMLMatch {
+  return {
+    entityId: (json['entity_id'] as string) ?? '',
+    name:     (json['name']      as string) ?? '',
+    score:    Number(json['score'] ?? 0),
+    datasets: Array.isArray(json['datasets']) ? json['datasets'].map(String) : [],
+    topics:   Array.isArray(json['topics'])   ? json['topics'].map(String)   : [],
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AMLScreening
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** AML/sanctions screening result. */
+export interface AMLScreening {
+  performed: boolean;
+  status: string;
+  riskLevel: string;
+  totalMatches: number;
+  matches: AMLMatch[];
+  screenedAt?: string;
+  durationMs: number;
+}
+
+export function amlScreeningFromJson(json: Record<string, any>): AMLScreening {
+  return {
+    performed:    Boolean(json['performed'] ?? false),
+    status:       (json['status']                                        as string) ?? 'disabled',
+    riskLevel:    (json['riskLevel']    ?? json['risk_level']            as string) ?? 'low',
+    totalMatches: Number(json['totalMatches'] ?? json['total_matches']   ?? 0),
+    matches:      Array.isArray(json['matches'])
+                    ? json['matches'].map((m: any) => amlMatchFromJson(m))
+                    : [],
+    screenedAt:   (json['screenedAt'] ?? json['screened_at']            as string) ?? undefined,
+    durationMs:   Number(json['durationMs'] ?? json['duration_ms']     ?? 0),
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // KYCResult
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -466,6 +518,7 @@ export interface KYCResult {
   selfieResult?: SelfieResult;
   rectoResult?: DocumentResult;
   versoResult?: DocumentResult;
+  amlScreening?: AMLScreening;
   rejectionReason?: string;
   rejectionMessage?: string;
   fraudIndicators: string[];
@@ -551,6 +604,7 @@ export function parseKYCResult(json: Record<string, any>): KYCResult {
   const selfieData = (json['selfieResult'] ?? json['selfie_result']) as Record<string, any> | undefined;
   const rectoData  = (json['rectoResult']  ?? json['recto_result'])  as Record<string, any> | undefined;
   const versoData  = (json['versoResult']  ?? json['verso_result'])  as Record<string, any> | undefined;
+  const amlData    = (json['amlScreening'] ?? json['aml_screening']) as Record<string, any> | undefined;
 
   return {
     success:              Boolean(json['success'] ?? false),
@@ -561,6 +615,7 @@ export function parseKYCResult(json: Record<string, any>): KYCResult {
     selfieResult:         selfieData ? selfieResultFromJson(selfieData)           : undefined,
     rectoResult:          rectoData  ? documentResultFromJson(rectoData)          : undefined,
     versoResult:          versoData  ? documentResultFromJson(versoData)          : undefined,
+    amlScreening:         amlData    ? amlScreeningFromJson(amlData)              : undefined,
     rejectionReason:      (json['rejectionReason']      ?? json['rejection_reason'])       as string | undefined,
     rejectionMessage:     (json['rejectionMessage']     ?? json['rejection_message'])      as string | undefined,
     fraudIndicators:      ((json['fraudIndicators']     ?? json['fraud_indicators']) as any[] | undefined)?.map(String) ?? [],
