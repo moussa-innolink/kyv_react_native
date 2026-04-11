@@ -204,6 +204,8 @@ export interface KyvshieldFlowConfig {
   showSuccessPerStep?: boolean;
   /** Require face match — selfie vs document photo (default: true when selfie+recto) */
   requireFaceMatch?: boolean;
+  /** Require AML (Anti-Money Laundering) sanctions screening (default: false) */
+  requireAml?: boolean;
   /** Play audio instructions for each challenge (default: false) */
   playChallengeAudio?: boolean;
   /** How many times to play the challenge audio instruction (default: once) */
@@ -234,6 +236,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.standard,
       documentDisplayMode: DocumentDisplayMode.standard,
       requireFaceMatch: false,
+      requireAml: false,
       showIntroPage: true,
       showInstructionPages: true,
       showResultPage: true,
@@ -257,6 +260,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.standard,
       documentDisplayMode: DocumentDisplayMode.standard,
       requireFaceMatch: false,
+      requireAml: false,
       showIntroPage: true,
       showInstructionPages: true,
       showResultPage: true,
@@ -280,6 +284,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.standard,
       documentDisplayMode: DocumentDisplayMode.standard,
       requireFaceMatch: false,
+      requireAml: false,
       showIntroPage: true,
       showInstructionPages: true,
       showResultPage: true,
@@ -303,6 +308,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.standard,
       documentDisplayMode: DocumentDisplayMode.standard,
       requireFaceMatch: true,
+      requireAml: false,
       showIntroPage: true,
       showInstructionPages: true,
       showResultPage: true,
@@ -326,6 +332,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.standard,
       documentDisplayMode: DocumentDisplayMode.standard,
       requireFaceMatch: true,
+      requireAml: false,
       showIntroPage: true,
       showInstructionPages: true,
       showResultPage: true,
@@ -349,6 +356,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.compact,
       documentDisplayMode: DocumentDisplayMode.compact,
       requireFaceMatch: true,
+      requireAml: false,
       showIntroPage: false,
       showInstructionPages: false,
       showResultPage: false,
@@ -372,6 +380,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.standard,
       documentDisplayMode: DocumentDisplayMode.standard,
       requireFaceMatch: true,
+      requireAml: false,
       showIntroPage: true,
       showInstructionPages: true,
       showResultPage: true,
@@ -395,6 +404,7 @@ export const FlowPresets = {
       selfieDisplayMode: SelfieDisplayMode.compact,
       documentDisplayMode: DocumentDisplayMode.compact,
       requireFaceMatch: true,
+      requireAml: false,
       showIntroPage: false,
       showInstructionPages: false,
       showResultPage: false,
@@ -453,6 +463,7 @@ export function serializeFlow(flow: KyvshieldFlowConfig): Record<string, any> {
     showResultPage:        flow.showResultPage        ?? true,
     showSuccessPerStep:    flow.showSuccessPerStep     ?? true,
     requireFaceMatch:      flow.requireFaceMatch      ?? true,
+    requireAml:            flow.requireAml            ?? false,
     playChallengeAudio:    flow.playChallengeAudio    ?? false,
     maxChallengeAudioPlay: challengeAudioRepeatCount(
       flow.maxChallengeAudioPlay ?? ChallengeAudioRepeat.once
